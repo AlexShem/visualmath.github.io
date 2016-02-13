@@ -2134,8 +2134,19 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
             }, 'rgb');
         return new THREE.Color('rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ')');
     };
+
+	Style.constantColor = function(r, g, b) {
+		return function(color, data, l) {
+			for (var i = 0; i < l; i++) {
+				color[i * 3] = r;
+				color[i * 3 + 1] = g;
+				color[i * 3 + 2] = b;
+			}
+		}
+	};
     
     Style.matHelper = function(type, col) {
+		console.log('style.matHelper');
         if (!isExisty(col))
             col = Style.randColor();
         if (type === 'point')
@@ -2144,11 +2155,13 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
                 transparent: true, 
                 opacity: 0.5, 
                 sizeAttenuation: false,
-                color: col
+				vertexColors: THREE.VertexColors
+                //color: col
             });
         else if (type === 'line')
             return new THREE.LineBasicMaterial({
-                color: col
+                //color: col
+				vertexColors: THREE.VertexColors
             });            
         else if (type === 'mesh')
             return new THREE.MeshLambertMaterial({
@@ -2156,7 +2169,8 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
                 transparent: true,
                 opacity: .5,
                 depthWrite: false,
-                color: col
+				vertexColors: THREE.VertexColors
+                //color: col
                 //depthTest: false
             });
     };
@@ -2478,16 +2492,19 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
             });
         else if (type === 'line')
             mat = new LineBasicMaterial({
+				vertexColors: _T.VertexColors
             });            
         else if (type === 'mesh')
             mat = new THREE.MeshPhongMaterial({
                 side: DoubleSide,
                 transparent: true,
                 opacity: .7,
+				vertexColors: _T.VertexColors,
+				normalScale: new _T.Vector2(1, 1)
                 //depthWrite: false
                 //depthTest: false
             });
-        mat.color = col;
+        //mat.color = col;
         return mat;
     };
     
@@ -2526,6 +2543,7 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 			lineIndex = new BufferAttribute(pool.get(Uint32Array, 0), 2),
 			meshIndex = new BufferAttribute(pool.get(Uint32Array, 0), 3),
 			normal = new BufferAttribute(pool.get(Float32Array, 0), 3);
+		var color = new BufferAttribute(pool.get(Float32Array, 0), 3);
 			
 		pointGeometry.addAttribute('position', position);
 		lineGeometry.addAttribute('position', position);
@@ -2533,6 +2551,10 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 		lineGeometry.addAttribute('index', lineIndex);
 		meshGeometry.addAttribute('index', meshIndex);
 		meshGeometry.addAttribute('normal', normal);
+
+		pointGeometry.addAttribute('color', color);
+		lineGeometry.addAttribute('color', color);
+		meshGeometry.addAttribute('color', color);
 		
 		var object = new Object3D();
         object.add(new PointCloud(pointGeometry, matHelper('point', col)))
@@ -2542,6 +2564,7 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
         
         this.panel = panel;
         this.position = position;
+        this.color = color;
         this.segments = lineIndex;
         this.faces = meshIndex;
         this.normals = normal;
@@ -2790,6 +2813,10 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
             array: new Uint32Array(0),
             length: 0
         });
+        this.colors = new Reactive({
+            array: new Float32Array(0),
+            length: 0
+        });
         this.base = new Reactive({parent: this, struct: []});
 	};
     
@@ -2935,7 +2962,8 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 			as = constraint.as || function() {},
 			maxlen = constraint.maxlen || 40,
             discrete = constraint.discrete || false;
-            
+		
+		//debugger;
         var sources = this.project(using, true);
         // I only do this shit because project forces product
         // however, if it doesn't (force), memo would have to go into unify
@@ -2983,7 +3011,7 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
             .bind(sources.map(function(src) {
                 return src.base;
             }));
-            
+		
         for (var i = 0; i < names.length; i++) {
             var dataset = this.datasets[names[i]];
             
@@ -3000,6 +3028,23 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
             }(i));                
         }
 
+		return this;
+	};
+
+	Object.prototype.colorize = function(args) {
+		var using = asArray(args.using || []),
+			as = args.as || function() {};
+		
+		var data = {},
+			len;
+		for (var i = 0; i < using.length; i++) {
+			data[using[i]] = this.datasets[using[i]].data.value().array;
+		}
+		var buf = this.glinstances[0].color,
+			len = this.project(this.glinstances[0].panel._axes)[0].data.value().length;
+		resizeBuffer(buf, len * 3);
+		// this should become as reactive as the Up-Goer 5
+		as(buf.array, data, len);
 		return this;
 	};
 	
@@ -3030,8 +3075,13 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
                 console.log('othing to see here');
                 return this;
             }
-            
+
 			interleave(tab.map(function(c) {return c.data.value()}), instance.position, 3);
+
+			debugger;
+			// reactiveness!
+			//interleave([tab[0].colors.value()], instance.color);
+
 			interleave([tab[0].edges.value()], instance.segments);
             interleave([tab[0].faces.value()], instance.faces);
             
@@ -3258,7 +3308,7 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 
 		this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 500);
 		this.camera.position.set(-4, 4, 5);
-		
+
 		this.scene = new THREE.Scene();
 		var pointLight = new THREE.PointLight(0xFFFFFF);
 		pointLight.position.set( 0, 5, 7 );
@@ -3311,7 +3361,9 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 			for (var i = 0; i < 3; i++) {
 				var geometry = new THREE.BufferGeometry();
 				geometry.addAttribute('position', new THREE.BufferAttribute(axisGeometry.getAttribute('position').array.subarray(i * 6 + 3, i * 6 + 6), 3));
-				this.axisObject.add(new THREE.PointCloud(geometry, new THREE.PointCloudMaterial()));
+				this.axisObject.add(new THREE.PointCloud(geometry, new THREE.PointCloudMaterial({
+					alphaTest: 0.17		// vaccarium.TODO: this is a horrible hack, see SOverflow #27042683
+				})));
 			}
 			
 			this.scene.add(this.axisObject);
@@ -3323,6 +3375,18 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 			drawTextLabel(this.axisObject.children[i + 1].material, axisId || '');
 		}.bind(this));
 		
+		return this;
+	};
+
+	Panel.prototype.clearAxes = function() {
+		if (isExisty(this.axisObject)) {
+			this.axisObject.children.forEach(function(child) {
+				this.axisObject.remove(child);
+			}.bind(this));
+			this.scene.remove(this.axisObject);
+			delete this.axisObject;
+		};
+
 		return this;
 	};
 		
@@ -3355,6 +3419,24 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 		
 		return this;
 	};
+
+	Panel.prototype.axisText = function(axis, distance) {
+		if (isExisty(this._axes) && this._axes.includes(axis)) {
+			var pos = this._axes.indexOf(axis),
+				geometry = new THREE.BufferGeometry();
+			geometry.addAttribute('position', new THREE.BufferAttribute(pool.get(Float32Array, 3), 3));
+			geometry.getAttribute('position').array[pos] = distance;
+			var textObject = new THREE.PointCloud(geometry, new THREE.PointCloudMaterial({
+				alphaTest: 0.17		// vaccarium.TODO: this is a horrible hack, see SOverflow #27042683
+			}));
+			drawTextLabel(textObject.material, distance || '');
+			this.axisObject.add(textObject);
+		}
+		return this;
+	};
+	Panel.prototype.labelAxis = function(axis, distance) {
+		return this.axisText(axis, distance);
+	};
 		
 	
 	function setAxisGeometry(posArray, length) {
@@ -3375,15 +3457,15 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 				var canvas = document.createElement('canvas'),
 					context = canvas.getContext('2d');
 				
-				context.font = 'Lighter ' + fontSizePx + 'px Helvetica';
-				
 				var computedSize = Math.ceil(Math.max(2 * (fontSizePx + baselineOffsetPx), context.measureText(str).width));
 				canvas.width = computedSize;
 				canvas.height = computedSize;
 				
 				context.font = 'Lighter ' + fontSizePx + 'px Helvetica';
-				context.fillStyle = '#444444';
 				context.textAlign = 'center';
+				context.strokeStyle = '#dddddd';
+				context.strokeText(str, Math.floor(computedSize / 2), Math.ceil(computedSize / 2) - baselineOffsetPx);
+				context.fillStyle = '#444444';
 				context.fillText(str, Math.floor(computedSize / 2), Math.ceil(computedSize / 2) - baselineOffsetPx);
 				 
 				memo[str] = {
@@ -3543,6 +3625,8 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 			temp = new Checkbox(init);
 		else if (type === 'number')
 			temp = new NumberInput(init, mockup.step);
+		else if (type === 'range')
+			temp = new RangeInput(init, bind, mockup.min, mockup.max);
 		else if (type === 'vector')
 			temp = new VectorInput(init, bind);
 		else if (type === 'text')
@@ -3606,6 +3690,47 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 			return parseFloat(this.value);
 		});
 		return temp;
+	};
+
+	function RangeInput(val, bind, min, max, step) {
+		var wrapper = document.createElement('div'),
+			valwrapper = document.createElement('div'),
+			valcont = document.createElement('span'),
+			temp = document.createElement('input'),
+			step = step || 0.01;
+		temp.type = 'range';
+		temp.value = val;
+		temp.min = min;
+		temp.max = max;
+		temp.step = step;
+		temp.onmousemove = function(evt) {
+			triggerEvent('change', temp);
+		};
+		if (bind) temp.addEventListener('change', bind);
+		wrapper.__defineGetter__('val', function() {
+			return parseFloat(temp.value);
+		});
+
+		var tempwidth = parseInt(window.getComputedStyle(temp).width),
+			tempstep = tempwidth / (parseFloat(max) - parseFloat(min));
+		showValue = function() {
+			var val = parseFloat(temp.value);
+			valcont.innerHTML = val.toFixed(1);
+			valcont.style.left = ((val - parseFloat(min)) * tempstep -
+				12 * (val - parseFloat(min)) / (parseFloat(max) - parseFloat(min)) + 6) + 'px';
+		};
+
+		temp.addEventListener('change', showValue);
+		showValue();
+
+		valcont.style.position = 'relative';
+		valcont.style.display = 'inline-block';
+		valcont.style.transform = 'translateX(-50%)';
+		valwrapper.appendChild(valcont);
+		wrapper.appendChild(valwrapper);
+		wrapper.appendChild(temp);
+		wrapper.style.position = 'relative';
+		return wrapper;
 	};
 	
 	function VectorInput(values, bind) {

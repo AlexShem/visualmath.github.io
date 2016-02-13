@@ -70,9 +70,13 @@
 		var pan3d_main = new grafar.Panel(document.getElementById('plot3d_main'));
 		
 		var main_graf = new grafar.Object().pin(pan3d_main),
-			problem;
+			sub_graf = new grafar.Object().pin(pan3d_main),
+			problem,
+			a = 1.4,
+			b = 1.6,
+			c = 1.1;
 		
-		pan3d_main.camera.position.set(-2.5, 2.5, 2.5);
+		pan3d_main.camera.position.set(-4, 4, 4);
 		
 		function updateProblem() {
 			
@@ -81,28 +85,83 @@
 			var problemId = sel1.container.getAttribute('value');		// <--- Don't need this
 			
 			//Plotting Main function
-			main_graf.reset()
-					.constrain({what: 'phi', maxlen: 30, as: grafar.seq(0, Math.PI, 'phi')})
-					.constrain({what: 'xi', maxlen: 30, as: grafar.seq(-0.5 * Math.PI, 0.5 * Math.PI, 'xi')})
-					.constrain({what: 't', maxlen: 2, as: grafar.seq(-1, 1, 't', false, true)})
-					.constrain({what: 'r', using: 'phi, xi, t', as: function (data, l) {
-						var phi = data.phi, xi = data.xi, t = data.t;
-						for (var i = 0; i < l; i++) {
-							data.r[i] = t[i] * eqn[0](phi[i], xi[i]);
-						}
-					 }})
-					 .constrain({what: 'x, y, z', using: 'r, phi, xi', as: function(data, l) {
-						 var r = data.r, phi = data.phi, xi = data.xi;
-						 for (var i = 0; i < l; i++) {
-							 data.x[i] = eqn[1](r[i], phi[i], xi[i]);
-							 data.y[i] = eqn[2](r[i], phi[i], xi[i]);
-							 data.z[i] = eqn[3](r[i], phi[i], xi[i]);
-						 }
-					 }})
-					 .refresh();
-			main_graf.glinstances[0].object.children[0].material.color.r = 65/255;
-			main_graf.glinstances[0].object.children[0].material.color.g = 105/255;
-			main_graf.glinstances[0].object.children[0].material.color.b = 255/255;
+			if (problem.extra == 'yes') {	// If second suface is needed
+				sub_graf.hide(false);
+				main_graf.reset()
+						.constrain({what: 'phi', maxlen: 50, as: grafar.seq(0, 2 * Math.PI, 'phi')})
+						.constrain({what: 'xi', maxlen: 50, as: grafar.seq(-0.5 * Math.PI, 0.5 * Math.PI, 'xi')})
+						.constrain({what: 'r', using: 'phi, xi', as: function (data, l) {
+							var phi = data.phi, xi = data.xi, t = data.t;
+							for (var i = 0; i < l; i++) {
+								data.r[i] = eqn[0](phi[i], xi[i], a, b, c);
+							}
+						 }})
+						.constrain({what: 'x, y, z', using: 'r, phi, xi', as: function(data, l) {
+							 var r = data.r, phi = data.phi, xi = data.xi;
+							 for (var i = 0; i < l; i++) {
+								 data.x[i] = eqn[1](r[i], phi[i], xi[i]);
+								 data.y[i] = eqn[2](r[i], phi[i], xi[i]);
+								 data.z[i] = eqn[3](r[i], phi[i], xi[i]);
+							 }
+						 }})
+						 .refresh();
+				main_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
+				sub_graf.reset()
+						.constrain({what: 'phi', maxlen: 50, as: grafar.seq(0, Math.PI, 'phi')})
+						.constrain({what: 'xi', maxlen: 50, as: grafar.seq(-0.5 * Math.PI, 0.5 * Math.PI, 'xi')})
+						.constrain({what: 'r', using: 'phi, xi', as: function (data, l) {
+							var phi = data.phi, xi = data.xi, t = data.t;
+							for (var i = 0; i < l; i++) {
+								data.r[i] = eqn[0](phi[i], xi[i], a, b, c);
+							}
+						 }})
+						.constrain({what: 'x, y, z', using: 'r, phi, xi', as: function(data, l) {
+							 var r = data.r, phi = data.phi, xi = data.xi;
+							 for (var i = 0; i < l; i++) {
+								 data.x[i] = eqn[1](r[i], phi[i], xi[i]);
+								 data.y[i] = eqn[2](r[i], phi[i], xi[i]);
+								 data.z[i] = -eqn[3](r[i], phi[i], xi[i]);
+							 }
+						 }})
+						 .refresh();
+				sub_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
+			} else if (problem.extra == 'no') {
+				sub_graf.hide(true);
+				main_graf.reset()
+						.constrain({what: 'phi', maxlen: 50, as: grafar.seq(0, 2 * Math.PI, 'phi')})
+						.constrain({what: 'xi', maxlen: 50, as: grafar.seq(-0.5 * Math.PI, 0.5 * Math.PI, 'xi')})
+						.constrain({what: 'r', using: 'phi, xi', as: function (data, l) {
+							var phi = data.phi, xi = data.xi, t = data.t;
+							for (var i = 0; i < l; i++) {
+								data.r[i] = eqn[0](phi[i], xi[i], a, b, c);
+							}
+						 }})
+						.constrain({what: 'x, y, z', using: 'r, phi, xi', as: function(data, l) {
+							 var r = data.r, phi = data.phi, xi = data.xi;
+							 for (var i = 0; i < l; i++) {
+								 data.x[i] = eqn[1](r[i], phi[i], xi[i]);
+								 data.y[i] = eqn[2](r[i], phi[i], xi[i]);
+								 data.z[i] = eqn[3](r[i], phi[i], xi[i]);
+							 }
+						 }})
+						 .refresh();
+				main_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
+			} else if (problem.extra == 'explicit') {
+				sub_graf.hide(true);
+				main_graf.reset()
+						.constrain({what: 'phi', maxlen: 50, as: grafar.seq(-5, 5, 'phi')})
+						.constrain({what: 'xi', maxlen: 50, as: grafar.seq(-5, 5, 'xi')})
+						.constrain({what: 'x, y, z', using: 'phi, xi', as: function(data, l) {
+							 var r = data.r, phi = data.phi, xi = data.xi;
+							 for (var i = 0; i < l; i++) {
+								 data.x[i] = phi[i];
+								 data.y[i] = xi[i];
+								 data.z[i] = eqn[0](phi[i], xi[i], a, b);
+							 }
+						 }})
+						 .refresh();
+				main_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
+			}
 		}
 		
 		hideAllBut = function(container, visible) {
