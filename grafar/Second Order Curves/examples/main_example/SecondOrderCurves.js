@@ -67,69 +67,115 @@
 		panelMainDiv.addEventListener('mouseover', eulerface.lockScroll);
 		panelMainDiv.addEventListener('mouseout', eulerface.unlockScroll);
 		
+		grafar.ui([
+			{type: 'label', init: 'a'},
+			{type: 'range', init: '1', min: '0.05', max: '4', id: 'a_param', bind: updateParams},
+			{type: 'label', init: 'b'},
+			{type: 'range', init: '1', min: '0.05', max: '4', id: 'b_param', bind: updateParams},
+			{type: 'label', init: 'c'},
+			{type: 'range', init: '1', min: '0.05', max: '4', id: 'c_param', bind: updateParams}
+		], {container: 'options'});
+		
 		var pan3d_main = new grafar.Panel(document.getElementById('plot3d_main'));
 		
 		var main_graf = new grafar.Object().pin(pan3d_main),
 			sub_graf = new grafar.Object().pin(pan3d_main),
 			problem,
-			a = 1.4,
-			b = 1.6,
-			c = 1.1;
+			a = 1, //1.4,
+			b = 1, //1.6,
+			c = 1; //1.1;
 		
 		pan3d_main.camera.position.set(-4, 4, 4);
 		
+		function updateParams() {
+			a = document.getElementById('a_param').val;
+			b = document.getElementById('b_param').val;
+			c = document.getElementById('c_param').val;
+			updateProblem();
+		}
+		
+		// function resetParams() {
+			// document.getElementById('a_param').val = 1;
+			// document.getElementById('b_param').val = 1;
+			// document.getElementById('c_param').val = 1;
+			// a = 1;
+			// b = 1;
+			// c = 1;
+		// }
+		
 		function updateProblem() {
+			//resetParams();
 			
 			problem = getProblemById(sel1.container.getAttribute('value'));
 			var eqn = problem.eqn_comp;
 			var problemId = sel1.container.getAttribute('value');		// <--- Don't need this
 			
 			//Plotting Main function
-			if (problem.extra == 'yes') {	// If second suface is needed
+			if (problem.extra == '1_hyperboloid') {	// If second suface is needed
 				sub_graf.hide(false);
 				main_graf.reset()
-						.constrain({what: 'phi', maxlen: 50, as: grafar.seq(0, 2 * Math.PI, 'phi')})
-						.constrain({what: 'xi', maxlen: 50, as: grafar.seq(-0.5 * Math.PI, 0.5 * Math.PI, 'xi')})
-						.constrain({what: 'r', using: 'phi, xi', as: function (data, l) {
-							var phi = data.phi, xi = data.xi, t = data.t;
-							for (var i = 0; i < l; i++) {
-								data.r[i] = eqn[0](phi[i], xi[i], a, b, c);
-							}
-						 }})
-						.constrain({what: 'x, y, z', using: 'r, phi, xi', as: function(data, l) {
-							 var r = data.r, phi = data.phi, xi = data.xi;
+						.constrain({what: 'phi', maxlen: 60, as: grafar.seq(0, 2 * Math.PI, 'phi')})
+						.constrain({what: 'xi', maxlen: 60, as: grafar.seq(-0.5 * Math.PI, 0.5 * Math.PI, 'xi')})
+						.constrain({what: 'r', maxlen: 60, as: grafar.seq(1, 3, 'r')})
+						.constrain({what: 'x, y, z', using: 'r, phi', as: function(data, l) {
+							 var r = data.r, phi = data.phi;
 							 for (var i = 0; i < l; i++) {
-								 data.x[i] = eqn[1](r[i], phi[i], xi[i]);
-								 data.y[i] = eqn[2](r[i], phi[i], xi[i]);
-								 data.z[i] = eqn[3](r[i], phi[i], xi[i]);
+								 data.x[i] = eqn[0](r[i], phi[i], a);
+								 data.y[i] = eqn[1](r[i], phi[i], b);
+								 data.z[i] = eqn[2](r[i], a, b, c);
 							 }
 						 }})
 						 .refresh();
 				main_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
 				sub_graf.reset()
-						.constrain({what: 'phi', maxlen: 50, as: grafar.seq(0, Math.PI, 'phi')})
-						.constrain({what: 'xi', maxlen: 50, as: grafar.seq(-0.5 * Math.PI, 0.5 * Math.PI, 'xi')})
-						.constrain({what: 'r', using: 'phi, xi', as: function (data, l) {
-							var phi = data.phi, xi = data.xi, t = data.t;
-							for (var i = 0; i < l; i++) {
-								data.r[i] = eqn[0](phi[i], xi[i], a, b, c);
-							}
-						 }})
-						.constrain({what: 'x, y, z', using: 'r, phi, xi', as: function(data, l) {
-							 var r = data.r, phi = data.phi, xi = data.xi;
+						.constrain({what: 'phi', maxlen: 60, as: grafar.seq(0, 2 * Math.PI, 'phi')})
+						.constrain({what: 'xi', maxlen: 60, as: grafar.seq(-0.5 * Math.PI, 0.5 * Math.PI, 'xi')})
+						.constrain({what: 'r', maxlen: 60, as: grafar.seq(1, 3, 'r')})
+						.constrain({what: 'x, y, z', using: 'r, phi', as: function(data, l) {
+							 var r = data.r, phi = data.phi;
 							 for (var i = 0; i < l; i++) {
-								 data.x[i] = eqn[1](r[i], phi[i], xi[i]);
-								 data.y[i] = eqn[2](r[i], phi[i], xi[i]);
-								 data.z[i] = -eqn[3](r[i], phi[i], xi[i]);
+								 data.x[i] = eqn[0](r[i], phi[i], a);
+								 data.y[i] = eqn[1](r[i], phi[i], b);
+								 data.z[i] = -eqn[2](r[i], a, b, c);
 							 }
 						 }})
 						 .refresh();
 				sub_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
-			} else if (problem.extra == 'no') {
+			} else if (problem.extra == '2_hyperboloid') {	// If second suface is needed
+				sub_graf.hide(false);
+				main_graf.reset()
+						.constrain({what: 'phi', maxlen: 60, as: grafar.seq(0, 2 * Math.PI, 'phi')})
+						//.constrain({what: 'xi', maxlen: 60, as: grafar.seq(-0.5 * Math.PI, 0.5 * Math.PI, 'xi')})
+						.constrain({what: 'r', maxlen: 60, as: grafar.seq(0, 3, 'r')})
+						.constrain({what: 'x, y, z', using: 'r, phi', as: function(data, l) {
+							 var r = data.r, phi = data.phi;
+							 for (var i = 0; i < l; i++) {
+								 data.x[i] = eqn[0](r[i], phi[i], a);
+								 data.y[i] = eqn[1](r[i], phi[i], b);
+								 data.z[i] = eqn[2](r[i], a, b, c);
+							 }
+						 }})
+						 .refresh();
+				main_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
+				sub_graf.reset()
+						.constrain({what: 'phi', maxlen: 60, as: grafar.seq(0, 2 * Math.PI, 'phi')})
+						//.constrain({what: 'xi', maxlen: 60, as: grafar.seq(-0.5 * Math.PI, 0.5 * Math.PI, 'xi')})
+						.constrain({what: 'r', maxlen: 60, as: grafar.seq(0, 3, 'r')})
+						.constrain({what: 'x, y, z', using: 'r, phi', as: function(data, l) {
+							 var r = data.r, phi = data.phi;
+							 for (var i = 0; i < l; i++) {
+								 data.x[i] = eqn[0](r[i], phi[i], a);
+								 data.y[i] = eqn[1](r[i], phi[i], b);
+								 data.z[i] = -eqn[2](r[i], a, b, c);
+							 }
+						 }})
+						 .refresh();
+				sub_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
+			} else if (problem.extra == 'ellipsoid') {
 				sub_graf.hide(true);
 				main_graf.reset()
-						.constrain({what: 'phi', maxlen: 50, as: grafar.seq(0, 2 * Math.PI, 'phi')})
-						.constrain({what: 'xi', maxlen: 50, as: grafar.seq(-0.5 * Math.PI, 0.5 * Math.PI, 'xi')})
+						.constrain({what: 'phi', maxlen: 60, as: grafar.seq(0, 2 * Math.PI, 'phi')})
+						.constrain({what: 'xi', maxlen: 60, as: grafar.seq(-0.5 * Math.PI, 0.5 * Math.PI, 'xi')})
 						.constrain({what: 'r', using: 'phi, xi', as: function (data, l) {
 							var phi = data.phi, xi = data.xi, t = data.t;
 							for (var i = 0; i < l; i++) {
@@ -149,8 +195,8 @@
 			} else if (problem.extra == 'explicit') {
 				sub_graf.hide(true);
 				main_graf.reset()
-						.constrain({what: 'phi', maxlen: 50, as: grafar.seq(-5, 5, 'phi')})
-						.constrain({what: 'xi', maxlen: 50, as: grafar.seq(-5, 5, 'xi')})
+						.constrain({what: 'phi', maxlen: 60, as: grafar.seq(-5, 5, 'phi')})
+						.constrain({what: 'xi', maxlen: 60, as: grafar.seq(-5, 5, 'xi')})
 						.constrain({what: 'x, y, z', using: 'phi, xi', as: function(data, l) {
 							 var r = data.r, phi = data.phi, xi = data.xi;
 							 for (var i = 0; i < l; i++) {
@@ -161,6 +207,51 @@
 						 }})
 						 .refresh();
 				main_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
+			} else if (problem.extra == 'polar') {
+				sub_graf.hide(true);
+				main_graf.reset()
+						.constrain({what: 'phi', maxlen: 60, as: grafar.seq(0, 2 * Math.PI, 'phi')})
+						.constrain({what: 'xi', maxlen: 60, as: grafar.seq(-3, 3, 'xi')})
+						.constrain({what: 'x, y, z', using: 'phi, xi', as: function(data, l) {
+							 var phi = data.phi, xi = data.xi;
+							 for (var i = 0; i < l; i++) {
+								 data.x[i] = eqn[0](phi[i], a);
+								 data.y[i] = eqn[1](phi[i], b);
+								 data.z[i] = xi[i];
+							 }
+						 }})
+						 .refresh();
+				main_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
+			} else if (problem.extra == '2_hype_cil') {	// If second suface is needed
+				sub_graf.hide(false);
+				main_graf.reset()
+						.constrain({what: 'phi', maxlen: 60, as: grafar.seq(0, 2 * Math.PI, 'phi')})
+						//.constrain({what: 'xi', maxlen: 60, as: grafar.seq(-0.5 * Math.PI, 0.5 * Math.PI, 'xi')})
+						.constrain({what: 'r', maxlen: 60, as: grafar.seq(0, 3, 'r')})
+						.constrain({what: 'x, y, z', using: 'r, phi', as: function(data, l) {
+							 var r = data.r, phi = data.phi;
+							 for (var i = 0; i < l; i++) {
+								 data.x[i] = (phi[i] - Math.PI) * 3 / Math.PI;
+								 data.y[i] = (r[i] - 1.5) * 3 / 1.5;
+								 data.z[i] = eqn[2](data.x[i], a, b, c);
+							 }
+						 }})
+						 .refresh();
+				main_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
+				sub_graf.reset()
+						.constrain({what: 'phi', maxlen: 60, as: grafar.seq(0, 2 * Math.PI, 'phi')})
+						//.constrain({what: 'xi', maxlen: 60, as: grafar.seq(-0.5 * Math.PI, 0.5 * Math.PI, 'xi')})
+						.constrain({what: 'r', maxlen: 60, as: grafar.seq(0, 3, 'r')})
+						.constrain({what: 'x, y, z', using: 'r, phi', as: function(data, l) {
+							 var r = data.r, phi = data.phi;
+							 for (var i = 0; i < l; i++) {
+								 data.x[i] = (phi[i] - Math.PI) * 3 / Math.PI;
+								 data.y[i] = (r[i] - 1.5) * 3 / 1.5;
+								 data.z[i] = -eqn[2](data.x[i], a, b, c);
+							 }
+						 }})
+						 .refresh();
+				sub_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
 			}
 		}
 		

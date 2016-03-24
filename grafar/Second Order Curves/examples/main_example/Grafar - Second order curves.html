@@ -46,44 +46,41 @@
 			<div class = 'dynamicBlock'>
 				<div class = 'control' id = 'controlBlock1'>
 					<div id = "options"></div>
-					<!-- <div id = "point_opt">
-						<p>Точка касания:
-							x:
-							<input id = "x_input" type = "number" min = "-8.5" max = "5" step = "0.1" value = "0" style = "width:53px">
-							y:
-							<input id = "y_input" type = "number" min = "-8.5" max = "5" step = "0.1" value = "0" style = "width:53px">
-						</p>
-						<p>1-ая точка
-							x:
-							<input id = "x_pt1" type = "number" min = "-8.5" max = "5" step = "0.1" value = "3.5" style = "width:53px">
-							y:
-							<input id = "y_pt1" type = "number" min = "-8.5" max = "5" step = "0.1" value = "0" style = "width:53px">
-						
-							2-ая точка
-							x:
-							<input id = "x_pt2" type = "number" min = "-8.5" max = "5" step = "0.1" value = "0" style = "width:53px">
-							y:
-							<input id = "y_pt2" type = "number" min = "-8.5" max = "5" step = "0.1" value = "3.5" style = "width:53px">
-						</p>
-					</div> -->
 					<p>
 						Поверхность:
 						<select id='sel1'></select>
 					</p>
 					<div id='opt-la-1'>
+						Эллипсоид
                         $$ \frac{x^2}{a^2} + \frac{y^2}{b^2} + \frac{z^2}{c^2} = 1 $$ 
 					</div>
 					<div id='opt-la-2'>
+						Однополостной гиперболоид
                         $$ \frac{x^2}{a^2} + \frac{y^2}{b^2} - \frac{z^2}{c^2} = 1 $$ 
 					</div>
 					<div id='opt-la-3'>
+						Двуполостной гиперболоид
                         $$ \frac{x^2}{a^2} + \frac{y^2}{b^2} - \frac{z^2}{c^2} = -1 $$ 
 					</div>
 					<div id='opt-la-4'>
+						Эллиптический параболоид
                         $$ \frac{x^2}{a^2} + \frac{y^2}{b^2} = z $$ 
 					</div>
 					<div id='opt-la-5'>
+						Гиперболический параболоид
                         $$ \frac{x^2}{a^2} - \frac{y^2}{b^2} = z $$ 
+					</div>
+					<div id='opt-la-6'>
+						Эллиптический цилиндр
+                        $$ \frac{x^2}{a^2} + \frac{y^2}{b^2} = 1 $$ 
+					</div>
+					<div id='opt-la-7'>
+						Гиперболический цилиндр
+                        $$ \frac{x^2}{a^2} - \frac{y^2}{b^2} = 1 $$ 
+					</div>
+					<div id='opt-la-8'>
+						Параболический цилиндр
+                        $$ \frac{x^2}{a^2} = y $$ 
 					</div>
 				</div>
 			</div>
