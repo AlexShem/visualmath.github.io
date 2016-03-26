@@ -2140,7 +2140,7 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 			for (var i = 0; i < l; i++) {
 				color[i * 3] = r;
 				color[i * 3 + 1] = g;
-				color[i * 3 + 2] = b;
+				color[i * 3 + 1] = b;
 			}
 		}
 	};
@@ -3626,7 +3626,7 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 		else if (type === 'number')
 			temp = new NumberInput(init, mockup.step);
 		else if (type === 'range')
-			temp = new RangeInput(init, bind, mockup.min, mockup.max);
+			temp = new RangeInput(init, mockup.min, mockup.max);
 		else if (type === 'vector')
 			temp = new VectorInput(init, bind);
 		else if (type === 'text')
@@ -3692,11 +3692,8 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 		return temp;
 	};
 
-	function RangeInput(val, bind, min, max, step) {
-		var wrapper = document.createElement('div'),
-			valwrapper = document.createElement('div'),
-			valcont = document.createElement('span'),
-			temp = document.createElement('input'),
+	function RangeInput(val, min, max, step) {
+		var temp = document.createElement('input'),
 			step = step || 0.01;
 		temp.type = 'range';
 		temp.value = val;
@@ -3706,31 +3703,10 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 		temp.onmousemove = function(evt) {
 			triggerEvent('change', temp);
 		};
-		if (bind) temp.addEventListener('change', bind);
-		wrapper.__defineGetter__('val', function() {
-			return parseFloat(temp.value);
+		temp.__defineGetter__('val', function() {
+			return parseFloat(this.value);
 		});
-
-		var tempwidth = parseInt(window.getComputedStyle(temp).width),
-			tempstep = tempwidth / (parseFloat(max) - parseFloat(min));
-		showValue = function() {
-			var val = parseFloat(temp.value);
-			valcont.innerHTML = val.toFixed(1);
-			valcont.style.left = ((val - parseFloat(min)) * tempstep -
-				12 * (val - parseFloat(min)) / (parseFloat(max) - parseFloat(min)) + 6) + 'px';
-		};
-
-		temp.addEventListener('change', showValue);
-		showValue();
-
-		valcont.style.position = 'relative';
-		valcont.style.display = 'inline-block';
-		valcont.style.transform = 'translateX(-50%)';
-		valwrapper.appendChild(valcont);
-		wrapper.appendChild(valwrapper);
-		wrapper.appendChild(temp);
-		wrapper.style.position = 'relative';
-		return wrapper;
+		return temp;
 	};
 	
 	function VectorInput(values, bind) {

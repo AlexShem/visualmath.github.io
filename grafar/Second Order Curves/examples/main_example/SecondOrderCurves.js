@@ -125,8 +125,25 @@
 								 data.z[i] = eqn[2](r[i], a, b, c);
 							 }
 						 }})
+						 .colorize({using: 'z', as: function (color, data, l) {
+							var max_z = 0.0;
+							for (var i = 0; i < l; i++) {
+								max_z = (max_z < Math.abs(data.z[i])) ? Math.abs(data.z[i]) : max_z;
+							}
+						
+							for (var i = 0; i < l; i++) {
+								var outcolor = Color.convert({
+									'h': 180 - data.z[i] / max_z * 120,
+									's': 75,
+									'v': 75
+								}, 'rgb');
+								color[i * 3] = outcolor.r / 255.0;
+								color[i * 3 + 1] = outcolor.g / 255.0;
+								color[i * 3 + 2] = outcolor.b / 255.0;
+							}
+						 }})
 						 .refresh();
-				main_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
+				//main_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
 				sub_graf.reset()
 						.constrain({what: 'phi', maxlen: 60, as: grafar.seq(0, 2 * Math.PI, 'phi')})
 						.constrain({what: 'xi', maxlen: 60, as: grafar.seq(-0.5 * Math.PI, 0.5 * Math.PI, 'xi')})
@@ -139,8 +156,25 @@
 								 data.z[i] = -eqn[2](r[i], a, b, c);
 							 }
 						 }})
+						 .colorize({using: 'z', as: function (color, data, l) {
+							var max_z = 0.0;
+							for (var i = 0; i < l; i++) {
+								max_z = (max_z < Math.abs(data.z[i])) ? Math.abs(data.z[i]) : max_z;
+							}
+						
+							for (var i = 0; i < l; i++) {
+								var outcolor = Color.convert({
+									'h': 180 - data.z[i] / max_z * 120,
+									's': 75,
+									'v': 75
+								}, 'rgb');
+								color[i * 3] = outcolor.r / 255.0;
+								color[i * 3 + 1] = outcolor.g / 255.0;
+								color[i * 3 + 2] = outcolor.b / 255.0;
+							}
+						 }})
 						 .refresh();
-				sub_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
+				//sub_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
 			} else if (problem.extra == '2_hyperboloid') {	// If second suface is needed
 				sub_graf.hide(false);
 				main_graf.reset()
@@ -155,8 +189,25 @@
 								 data.z[i] = eqn[2](r[i], a, b, c);
 							 }
 						 }})
+						 .colorize({using: 'z', as: function (color, data, l) {
+							var max_z = 0.0;
+							for (var i = 0; i < l; i++) {
+								max_z = (max_z < Math.abs(data.z[i])) ? Math.abs(data.z[i]) : max_z;
+							}
+						
+							for (var i = 0; i < l; i++) {
+								var outcolor = Color.convert({
+									'h': 180 - data.z[i] / max_z * 120,
+									's': 75,
+									'v': 75
+								}, 'rgb');
+								color[i * 3] = outcolor.r / 255.0;
+								color[i * 3 + 1] = outcolor.g / 255.0;
+								color[i * 3 + 2] = outcolor.b / 255.0;
+							}
+						 }})
 						 .refresh();
-				main_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
+				//main_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
 				sub_graf.reset()
 						.constrain({what: 'phi', maxlen: 60, as: grafar.seq(0, 2 * Math.PI, 'phi')})
 						//.constrain({what: 'xi', maxlen: 60, as: grafar.seq(-0.5 * Math.PI, 0.5 * Math.PI, 'xi')})
@@ -169,8 +220,25 @@
 								 data.z[i] = -eqn[2](r[i], a, b, c);
 							 }
 						 }})
+						 .colorize({using: 'z', as: function (color, data, l) {
+							var max_z = 0.0;
+							for (var i = 0; i < l; i++) {
+								max_z = (max_z < Math.abs(data.z[i])) ? Math.abs(data.z[i]) : max_z;
+							}
+						
+							for (var i = 0; i < l; i++) {
+								var outcolor = Color.convert({
+									'h': 180 - data.z[i] / max_z * 120,
+									's': 75,
+									'v': 75
+								}, 'rgb');
+								color[i * 3] = outcolor.r / 255.0;
+								color[i * 3 + 1] = outcolor.g / 255.0;
+								color[i * 3 + 2] = outcolor.b / 255.0;
+							}
+						 }})
 						 .refresh();
-				sub_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
+				//sub_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
 			} else if (problem.extra == 'ellipsoid') {
 				sub_graf.hide(true);
 				main_graf.reset()
@@ -190,8 +258,25 @@
 								 data.z[i] = eqn[3](r[i], phi[i], xi[i]);
 							 }
 						 }})
+						 .colorize({using: 'z', as: function (color, data, l) {
+							var max_z = 0.0;
+							for (var i = 0; i < l; i++) {
+								max_z = (max_z < Math.abs(data.z[i])) ? Math.abs(data.z[i]) : max_z;
+							}
+						
+							for (var i = 0; i < l; i++) {
+								var outcolor = Color.convert({
+									'h': 180 - data.z[i] / max_z * 120,
+									's': 75,
+									'v': 75
+								}, 'rgb');
+								color[i * 3] = outcolor.r / 255.0;
+								color[i * 3 + 1] = outcolor.g / 255.0;
+								color[i * 3 + 2] = outcolor.b / 255.0;
+							}
+						 }})
 						 .refresh();
-				main_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
+				//main_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
 			} else if (problem.extra == 'explicit') {
 				sub_graf.hide(true);
 				main_graf.reset()
@@ -205,8 +290,25 @@
 								 data.z[i] = eqn[0](phi[i], xi[i], a, b);
 							 }
 						 }})
+						 .colorize({using: 'z', as: function (color, data, l) {
+							var max_z = 0.0;
+							for (var i = 0; i < l; i++) {
+								max_z = (max_z < Math.abs(data.z[i])) ? Math.abs(data.z[i]) : max_z;
+							}
+						
+							for (var i = 0; i < l; i++) {
+								var outcolor = Color.convert({
+									'h': 180 - data.z[i] / max_z * 120,
+									's': 75,
+									'v': 75
+								}, 'rgb');
+								color[i * 3] = outcolor.r / 255.0;
+								color[i * 3 + 1] = outcolor.g / 255.0;
+								color[i * 3 + 2] = outcolor.b / 255.0;
+							}
+						 }})
 						 .refresh();
-				main_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
+				//main_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
 			} else if (problem.extra == 'polar') {
 				sub_graf.hide(true);
 				main_graf.reset()
@@ -220,8 +322,25 @@
 								 data.z[i] = xi[i];
 							 }
 						 }})
+						 .colorize({using: 'z', as: function (color, data, l) {
+							var max_z = 0.0;
+							for (var i = 0; i < l; i++) {
+								max_z = (max_z < Math.abs(data.z[i])) ? Math.abs(data.z[i]) : max_z;
+							}
+						
+							for (var i = 0; i < l; i++) {
+								var outcolor = Color.convert({
+									'h': 180 - data.z[i] / max_z * 120,
+									's': 75,
+									'v': 75
+								}, 'rgb');
+								color[i * 3] = outcolor.r / 255.0;
+								color[i * 3 + 1] = outcolor.g / 255.0;
+								color[i * 3 + 2] = outcolor.b / 255.0;
+							}
+						 }})
 						 .refresh();
-				main_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
+				//main_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
 			} else if (problem.extra == '2_hype_cil') {	// If second suface is needed
 				sub_graf.hide(false);
 				main_graf.reset()
@@ -236,8 +355,25 @@
 								 data.z[i] = eqn[2](data.x[i], a, b, c);
 							 }
 						 }})
+						 .colorize({using: 'z', as: function (color, data, l) {
+							var max_z = 0.0;
+							for (var i = 0; i < l; i++) {
+								max_z = (max_z < Math.abs(data.z[i])) ? Math.abs(data.z[i]) : max_z;
+							}
+						
+							for (var i = 0; i < l; i++) {
+								var outcolor = Color.convert({
+									'h': 180 - data.z[i] / max_z * 120,
+									's': 75,
+									'v': 75
+								}, 'rgb');
+								color[i * 3] = outcolor.r / 255.0;
+								color[i * 3 + 1] = outcolor.g / 255.0;
+								color[i * 3 + 2] = outcolor.b / 255.0;
+							}
+						 }})
 						 .refresh();
-				main_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
+				//main_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
 				sub_graf.reset()
 						.constrain({what: 'phi', maxlen: 60, as: grafar.seq(0, 2 * Math.PI, 'phi')})
 						//.constrain({what: 'xi', maxlen: 60, as: grafar.seq(-0.5 * Math.PI, 0.5 * Math.PI, 'xi')})
@@ -250,8 +386,25 @@
 								 data.z[i] = -eqn[2](data.x[i], a, b, c);
 							 }
 						 }})
+						 .colorize({using: 'z', as: function (color, data, l) {
+							var max_z = 0.0;
+							for (var i = 0; i < l; i++) {
+								max_z = (max_z < Math.abs(data.z[i])) ? Math.abs(data.z[i]) : max_z;
+							}
+						
+							for (var i = 0; i < l; i++) {
+								var outcolor = Color.convert({
+									'h': 180 - data.z[i] / max_z * 120,
+									's': 75,
+									'v': 75
+								}, 'rgb');
+								color[i * 3] = outcolor.r / 255.0;
+								color[i * 3 + 1] = outcolor.g / 255.0;
+								color[i * 3 + 2] = outcolor.b / 255.0;
+							}
+						 }})
 						 .refresh();
-				sub_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
+				//sub_graf.colorize({using: '', as: grafar.Style.constantColor(65/255, 105/255, 255/255)});
 			}
 		}
 		
